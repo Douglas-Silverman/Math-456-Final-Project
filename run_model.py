@@ -6,11 +6,17 @@ def calculate_winnings(file_name, model_name) :
     initial_capitol = 1000
     max_bet_per_game = 1000 / len(data)
     bet_size = max_bet_per_game
-    result = 0
+    profit = 0
+    result = [] # filled with tuples for every 10% of games
+    percent = len(data) // 10
+    count = 1
+    cutoff = (count * percent) - 1
+    result.append([0, profit])
+    index = 0
     for game in data :
         bet_team = ''
         bet_ML = 100
-        profit = -1 * bet_size
+        curr_profit = -1 * bet_size
         if(game[1] > game[3]) :
             bet_team = game[0]
             bet_ML = game[1]
@@ -18,10 +24,15 @@ def calculate_winnings(file_name, model_name) :
             bet_team = game[2]
             bet_ML = game[3]
         if(game[4] == bet_team) : # you won!
-            profit += payout(bet_ML, bet_size)
-        result += profit
-    print(result)
-    print(initial_capitol + result)
+            curr_profit += payout(bet_ML, bet_size)
+        profit += curr_profit
+        if(index == cutoff and count <= 9) :
+            result.append([cutoff, profit])
+            count += 1
+            cutoff = (count * percent) - 1
+        index += 1
+    result.append([len(data) - 1, profit])
+    return result
 
 def payout(ML, bet_size) :
     if(ML < 0) :
