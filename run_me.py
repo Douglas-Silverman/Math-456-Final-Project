@@ -6,4 +6,12 @@ from graph import *
 
 # plotModel("Betting on Winners vs NBA", "Games", calculate_winnings("./nba odds/nba odds 2019-20.csv", 0))
 
-plotSport("NFL betting", "NFL")
+plotSport("NFL Favorites", "NFL", calculate_winnings)
+plotSport("NBA Favorites", "NBA", calculate_winnings)
+plotSport("MLB Favorites", "MLB", calculate_winnings)
+
+plotSport("NFL Martingale", "NFL", martingale_model)
+plotSport("NBA Martingale", "NBA", martingale_model)
+plotSport("MLB Martingale", "MLB", martingale_model)
+
+# print(martingale_model("./mlb odds/mlb odds 2019.csv", True, 25))

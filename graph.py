@@ -26,16 +26,16 @@ def plotModel(title, xLabel, modelResult) :
     plt.show()
     plt.clf()
 
-def plotSport(title, sport) :
+def plotSport(title, sport, function) :
     files = []
     if(sport == "NFL") :
-        files.append("./nfl odds/nfl odds 2017-2018.csv")
-        files.append("./nfl odds/nfl odds 2018-2019.csv")
-        files.append("./nfl odds/nfl odds 2019-2020.csv")
+        files.append("./nfl odds/nfl odds 2017-18.csv")
+        files.append("./nfl odds/nfl odds 2018-19.csv")
+        files.append("./nfl odds/nfl odds 2019-20.csv")
     if(sport == "NBA") :
-        files.append("./nba odds/nba odds 2017-2018.csv")
-        files.append("./nba odds/nba odds 2018-2019.csv")
-        files.append("./nba odds/nba odds 2019-2020.csv")
+        files.append("./nba odds/nba odds 2017-18.csv")
+        files.append("./nba odds/nba odds 2018-19.csv")
+        files.append("./nba odds/nba odds 2019-20.csv")
     if(sport == "MLB") :
         files.append("./mlb odds/mlb odds 2017.csv")
         files.append("./mlb odds/mlb odds 2018.csv")
@@ -43,28 +43,27 @@ def plotSport(title, sport) :
     
     count = 0
     for year in files :
-        result = calculate_winnings(year, 0)
+        result = function(year, True, 50)
         xVars = []
         scores = []
     
         for currentTuple in result :
             xVars.append(currentTuple[0])
             scores.append(currentTuple[1])
-
-        mark = "ro"
+        mark = "r"
         if(count == 1) :
-            mark = "bx"
+            mark = "b"
         if(count == 2) :
-            mark == "g+"
+            mark = "g"
         plt.plot(xVars, scores, mark)
         scoreShort = []
         for score in scores :
             scoreShort.append(round(score, 2))
-        for z in zip(xVars, scoreShort) :
-            plt.annotate(("(%s, %s)"%z), xy = z, textcoords = "data") 
-        count += 1
+        # for z in zip(xVars, scoreShort) :
+        #     plt.annotate(("(%s, %s)"%z), xy = z, textcoords = "data") 
+        count = count + 1
     plt.xlabel("games")
     plt.ylabel("profit")
-    plt.legend()
     plt.title(title)
+    plt.grid(True)
     plt.show()
