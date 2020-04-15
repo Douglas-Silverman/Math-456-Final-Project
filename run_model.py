@@ -128,4 +128,52 @@ def martingale(ML, profit, initial_bet_size) :
     else:
         ratio = payout(ML, 1) - 1
         return abs(profit) / ratio
-        
+
+def oscars_grind(file_name, winners, segments) :
+    data = create_struct(file_name)
+    initial_capitol = 1000
+    initial_bet_size = 1
+    next_bet_size = 1
+    profit = 0
+    profit_round = 0 #profit per round
+    result = [] # filled with tuples for every 10% of games
+    percent = len(data) // segments
+    count = 1
+    cutoff = (count * percent) - 1
+    result.append([0, profit])
+    index = 0
+    for game in data :
+        bet_team = ''
+        bet_ML = 100
+        if(not winners):
+            if(game[1] > game[3]) :
+                bet_team = game[0]
+                bet_ML = game[1]
+            else :
+                bet_team = game[2]
+                bet_ML = game[3]
+        else : # winners
+            if(game[1] < game[3]):
+                bet_team = game[0]
+                bet_ML = game[1]
+            else:
+                bet_team = game[2]
+                bet_ML = game[3]
+        bet_size = next_bet_size
+        curr_profit = -1 * bet_size
+        profit_round += curr_profit
+        if(game[4] == bet_team) : # you won!
+            curr_profit += payout(bet_ML, bet_size)
+            profit_round += payout(bet_ML, bet_size)
+            if(profit_round < 0) :
+                next_bet_size += 1
+            else :
+                next_bet_size = 1
+        profit += curr_profit
+        if(index == cutoff and count < segments) :
+            result.append([cutoff, profit])
+            count += 1
+            cutoff = (count * percent) - 1
+        index += 1
+    result.append([len(data) - 1, profit])
+    return result
