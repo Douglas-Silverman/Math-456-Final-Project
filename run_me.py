@@ -14,8 +14,8 @@ plotSport("NFL Martingale", "NFL", martingale_model)
 plotSport("NBA Martingale", "NBA", martingale_model)
 plotSport("MLB Martingale", "MLB", martingale_model)
 
-plotSport("NFL Martingale", "NFL", oscars_grind)
-plotSport("NBA Martingale", "NBA", oscars_grind)
-plotSport("MLB Martingale", "MLB", oscars_grind)
+plotSport("NFL Oscar's Grind", "NFL", oscars_grind)
+plotSport("NBA Oscar's Grind", "NBA", oscars_grind)
+plotSport("MLB Oscar's Grind", "MLB", oscars_grind)
 
 # print(martingale_model("./mlb odds/mlb odds 2019.csv", True, 25))
