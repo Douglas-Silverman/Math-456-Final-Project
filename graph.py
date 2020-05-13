@@ -42,7 +42,7 @@ def plotSport(title, sport, function) :
         files.append("./mlb odds/mlb odds 2019.csv")
     
     count = 0
-    legd = [] #used for legend
+    yearPlot = plt.figure(figsize= ((6.4, 4.8)))
     for year in files :
         result = function(year, True, 100)
         xVars = []
@@ -59,7 +59,7 @@ def plotSport(title, sport, function) :
         if(count == 2) :
             mark = "g"
             label = "2019 season"
-        yearLabel = plt.plot(xVars, scores, mark, label = label)
+        yearPlot = plt.plot(xVars, scores, mark, label = label)
         scoreShort = []
         for score in scores :
             scoreShort.append(round(score, 2))

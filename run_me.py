@@ -1,30 +1,55 @@
 from game_reader import *
 from run_model import *
 from graph import *
+from decimal import Decimal
 
-# print(calculate_winnings("./nba odds/nba odds 2019-20.csv", 0))
+def run_favorites():
+    plotSport("NFL Favorites", "NFL", bet_on_favorites)
+    plotSport("NBA Favorites", "NBA", bet_on_favorites)
+    plotSport("MLB Favorites", "MLB", bet_on_favorites)
 
-# plotModel("Betting on Winners vs NBA", "Games", calculate_winnings("./nba odds/nba odds 2019-20.csv", 0))
+def run_martingale():
+    plotSport("NFL Martingale", "NFL", martingale_model)
+    plotSport("NBA Martingale", "NBA", martingale_model)
+    plotSport("MLB Martingale", "MLB", martingale_model)
 
-# plotSport("NFL Favorites", "NFL", calculate_winnings)
-# plotSport("NBA Favorites", "NBA", calculate_winnings)
-# plotSport("MLB Favorites", "MLB", calculate_winnings)
+def run_oscar_grind():
+    plotSport("NFL Oscar's Grind", "NFL", oscars_grind)
+    plotSport("NBA Oscar's Grind", "NBA", oscars_grind)
+    plotSport("MLB Oscar's Grind", "MLB", oscars_grind)
 
-plotSport("NFL Martingale", "NFL", martingale_model)
-plotSport("NBA Martingale", "NBA", martingale_model)
-plotSport("MLB Martingale", "MLB", martingale_model)
+def run_kelly_criterion():
+    plotSport("NFL Kelly Criterion", "NFL", kelly_criterion)
+    plotSport("NBA Kelly Criterion", "NBA", kelly_criterion)
+    plotSport("MLB Kelly Criterion", "MLB", kelly_criterion)
 
-plotSport("NFL Oscar's Grind", "NFL", oscars_grind)
-plotSport("NBA Oscar's Grind", "NBA", oscars_grind)
-plotSport("MLB Oscar's Grind", "MLB", oscars_grind)
+def run_poisson():
+    plotSport("NFL Poisson", "NFL", poisson_model)
+    plotSport("NBA Poisson", "NBA", poisson_model)
+    plotSport("MLB Poisson", "MLB", poisson_model)
 
-plotSport("NFL Kelly Criterion", "NFL", kelly_criterion)
-plotSport("NBA Kelly Criterion", "NBA", kelly_criterion)
-plotSport("MLB Kelly Criterion", "MLB", kelly_criterion)
+def run_poisson_martingale():
+    plotSport("NFL Poisson Martingale", "NFL", poisson_model_martingale)
+    plotSport("NBA Poisson Martingale", "NBA", poisson_model_martingale)
+    plotSport("MLB Poisson Martingale", "MLB", poisson_model_martingale)
 
-# team_stats("./nfl odds/nfl odds 2018-19.csv")
-# print(poisson_model("./nba odds/nba odds 2017-18.csv", True, 100))
+def main():
+    run_favorites()
+    run_martingale()
+    # run_oscar_grind()
+    # run_kelly_criterion()
+    # run_poisson()
+    # run_poisson_martingale()
 
-plotSport("NFL Poisson", "NFL", poisson_model)
-plotSport("NBA Poisson", "NBA", poisson_model)
-plotSport("MLB Poisson", "MLB", poisson_model)
+# NEED TO RUN TWICE TO LOAD MATLIBPLOT
+count = 0
+if(count > 0):
+    if __name__ == "__main__":
+        main()
+if(count == 0):
+    count += 1
+
+    
+    
+
+# <Figure size 640x480 with 1 Axes>
