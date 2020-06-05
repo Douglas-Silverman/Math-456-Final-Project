@@ -28,7 +28,8 @@ from decimal import Decimal
 
 
 def bet_on_favorites(file_name, favorites, segments) :
-    data = create_struct(file_name) # array of games
+    data = create_struct(file_name) # [V Team, V ML, H Team, H ML, Winner name, V score, H score, Date]
+                                    #    0       1      2      3        4          5        6       7
     initial_capitol = 1000 
     max_bet_per_game = initial_capitol / len(data) 
     bet_size = max_bet_per_game
@@ -371,6 +372,12 @@ def poisson_model(file_name, favorites, segments):
     result.append([len(game_data) - 1, profit])
     return result
 
+def poisson(lambdaa, k):
+    pmf = 0
+    factorial = math.factorial(k)
+    pmf = ((lambdaa**k) * math.exp( (-1 *lambdaa) )) / factorial
+    return pmf
+
 def poissonNBA(lambdaa, k):
     pmf = Decimal(0)
     lambdaa = Decimal(lambdaa)
@@ -381,12 +388,6 @@ def poissonNBA(lambdaa, k):
     else:
         factorial = Decimal(math.factorial(k))
     pmf = ((lambdaa**k) * Decimal(math.exp( (Decimal(-1) *lambdaa)) )) / factorial
-    return pmf
-
-def poisson(lambdaa, k):
-    pmf = 0
-    factorial = math.factorial(k)
-    pmf = ((lambdaa**k) * math.exp( (-1 *lambdaa) )) / factorial
     return pmf
 
 # poisson prob that V team will win
@@ -447,8 +448,27 @@ def poisson_prob_away(team_data, game, number_of_games):
                 away_prob_win += poisson(A_likely_score, i) * poisson(H_likely_score, j)
     return away_prob_win
 
+###############################################################
+# Helper Function: poisson_prob_home
+#
+#   -this function finds the probability that the home team will win
+#
+######### Parameters:
+#
+# | Parameter        | Data Type | Description                            | Example                                        |
+# | ---------------- | --------- | -------------------------------------- | ---------------------------------------------- |
+# | team_data        | string    | the name of the file to be run         | filename : "./nba odds/nba odds 2017-2018.csv" |
+# | game             | boolean   | true if to bet on favorite(unused)     | favorite : True                                |
+# | number_of_games  | int       | number of segments (used for graphing) | segments : 100                                 |
+#
+######### Returns:
+#
+# An array of tuples (actually array of arrays). Each tuple stores the amount through the season and the current profit.
+#
+# | Key    | Data Type            | Description                                                           | Example                             |
+# | ------ | -------------------- | --------------------------------------------------------------------- | ----------------------------------- |
+# | result | [[int, float]]       | array of arrays that store the current progression and current profit | [[0,0], [17, 3.984], [34, -10.345]] |
 
-    # poisson prob that H team will win
 def poisson_prob_home(team_data, game, number_of_games):
     Away_score = team_data['total_away']
     Home_score = team_data['total_home']
