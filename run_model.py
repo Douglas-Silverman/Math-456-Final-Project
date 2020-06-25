@@ -37,14 +37,14 @@ def bet_on_favorites(file_name, favorites, segments) :
     result = [] # filled with tuples for every 1/segment
     percent = len(data) // segments # percent through the season
     count = 1 
-    cutoff = (count * percent) - 1 
+    cutoff = (count * percent) - 1 # used to add data points for the final graph
     result.append([0, profit])
     index = 0 # index represent the current index of game
     for game in data :
         bet_team = ''
         bet_ML = 100
         curr_profit = -1 * bet_size # once you make the bet you are at a deficit, if you win then you make profit
-        # if the ML of team 0 is < the ML of 
+        # picks the favorite based on which ML is smallest (more negative a ML the more of a favorite that team is)
         if(game[1] < game[3]) : 
             bet_team = game[0]
             bet_ML = game[1]
@@ -54,7 +54,8 @@ def bet_on_favorites(file_name, favorites, segments) :
         if(game[4] == bet_team) : # you won!
             curr_profit += payout(bet_ML, bet_size)
         profit += curr_profit
-        if(index == cutoff and count < segments) :
+        # data point added to result array and returned
+        if(index == cutoff and count < segments) : 
             result.append([cutoff, profit])
             count += 1
             cutoff = (count * percent) - 1
@@ -65,7 +66,23 @@ def bet_on_favorites(file_name, favorites, segments) :
 ###############################################################
 # Func payout:
 #
-#   this is a helper function that 
+#   this is a helper function that returns the total payout on a successful bet
+#
+######### Parameters:
+#
+# | Parameter | Data Type | Description                              | Example              |
+# | --------- | --------- | ---------------------------------------- | -------------------- |
+# | ML        | int       | The money line for the bet(american odds | -150, 110, 340, -300 |
+# | bet_size  | double    | the amount bet on the winning team       | 2, 3.45, 0.40        |
+
+#
+######### Returns:
+#
+# The amount won from a successful bet
+#
+# | Data Type | Description | Example |
+# | --------- | ----------- | ------- |
+# | float     | The payout  | 10.76   |
 
 def payout(ML, bet_size) :
     if(ML < 0) :
@@ -105,12 +122,13 @@ def kelly_criterion(file_name, favorites, segments) :
     result = [] # filled with tuples for every 10% of games
     percent = len(data) // segments
     count = 1
-    cutoff = (count * percent) - 1
+    cutoff = (count * percent) - 1 # used to add data points for the final graph
     result.append([0, profit])
     index = 0
     for game in data :
         bet_team = ''
         bet_ML = 100
+        # picks the favorite based on which ML is smallest (more negative a ML the more of a favorite that team is)
         if(game[1] < game[3]):
             bet_team = game[0]
             bet_ML = game[1]
@@ -119,11 +137,12 @@ def kelly_criterion(file_name, favorites, segments) :
             bet_ML = game[3]
         bet_team_prob = get_prob(bet_ML)
         bet_size = ((bet_team_prob * 2) - 1) * capital
-        curr_profit = -1 * bet_size
+        curr_profit = -1 * bet_size # once you make the bet you are at a deficit, if you win then you make profit
         if(game[4] == bet_team) : # you won!
             curr_profit += payout(bet_ML, bet_size)
         profit += curr_profit
         capital += curr_profit
+        # data point added to result array
         if(index == cutoff and count < segments) :
             result.append([cutoff, profit])
             count += 1
@@ -173,13 +192,14 @@ def martingale_model(file_name, favorites, segments) :
     result = [] # filled with tuples for every 10% of games
     percent = len(data) // segments
     count = 1
-    cutoff = (count * percent) - 1
+    cutoff = (count * percent) - 1 # used to add data points for the final graph
     result.append([0, profit])
     index = 0
     for game in data :
         bet_team = ''
         bet_ML = 100
         if(not favorites):
+            # underdogs
             if(game[1] > game[3]) :
                 bet_team = game[0]
                 bet_ML = game[1]
@@ -193,13 +213,14 @@ def martingale_model(file_name, favorites, segments) :
             else:
                 bet_team = game[2]
                 bet_ML = game[3]
-        bet_size = martingale(game[3], profit_round, initial_bet_size)
+        bet_size = martingale(game[3], profit_round, initial_bet_size) # gets the bet size based on current losses
         curr_profit = -1 * bet_size
         profit_round += curr_profit
         if(game[4] == bet_team) : # you won!
             curr_profit += payout(bet_ML, bet_size)
             profit_round = 0
         profit += curr_profit
+        # data point added to result array
         if(index == cutoff and count < segments) :
             result.append([cutoff, profit])
             count += 1
@@ -209,8 +230,31 @@ def martingale_model(file_name, favorites, segments) :
     return result
 
 
+###############################################################
+# Helper Func Martignale:
+#
+#   this is a helper function that returns the proper bet size such that a successful bet would payout the current losses
+#   this function is only called when the current season of betting is at a loss
+#   If profit is greater than or equal to 0 then the bet size should be intiail bet size
+#
+######### Parameters:
+#
+# | Parameter        | Data Type | Description                               | Example               |
+# | ---------------- | --------- | ----------------------------------------- | --------------------- |
+# | ML               | int       | The money line for the bet(american odds) | -150, 110, 340, -300  |
+# | profit           | double    | The current losses                        | -10.23, -100, -250.32 |
+# | initial_bet_size | double    | The initial bet size                      | -10.23, -100, -250.32 |
+#
+######### Returns:
+#
+# The amount won from a successful bet
+#
+# | Data Type | Description | Example         |
+# | --------- | ----------- | --------------- |
+# | float     | bet size    | 10.76, 176.34   |
+
 def martingale(ML, profit, initial_bet_size) :
-    if(profit < 0 and profit > -0.1):
+    if(profit < 0 and profit > -0.5):
         profit = 0
     if(profit >= 0):
         return initial_bet_size
@@ -253,7 +297,7 @@ def oscars_grind(file_name, favorites, segments) :
     result = [] # filled with tuples for every 10% of games
     percent = len(data) // segments
     count = 1
-    cutoff = (count * percent) - 1
+    cutoff = (count * percent) - 1 # used to add data points for the final graph
     result.append([0, profit])
     index = 0
     for game in data :
@@ -284,6 +328,7 @@ def oscars_grind(file_name, favorites, segments) :
             else :
                 next_bet_size = 1
         profit += curr_profit
+        # data point added to result array
         if(index == cutoff and count < segments) :
             result.append([cutoff, profit])
             count += 1
@@ -332,38 +377,41 @@ def poisson_model(file_name, favorites, segments):
             else:
                 new_year = str(int(file_name[26]) - 1)
                 prev_year = prev_year[0:26] + new_year + prev_year[27:]
-        prev_year = team_stats(create_struct(prev_year))
+        prev_year = team_stats(create_struct(prev_year)) 
     month_team_data = team_stats_per_month(prev_year, game_data) # obtains data for the previous year of play
     profit = 0
     result = [] # filled with tuples for every 10% of games
     percent = len(game_data) // segments
     count = 1
-    cutoff = (count * percent) - 1
+    cutoff = (count * percent) - 1 # used to add data points for the final graph
     result.append([0, profit])
     index = 0
     start_month = game_data[0][7]
     for game in game_data :
-        if(game[7] != start_month):
+        if(game[7] != start_month): # do not bet on start month to gather data for better prediction 
+            # initialized values
             bet_team = ''
             bet_ML = 100
             bet_size = 5
             prev_month = game[7] - 1
-            if(prev_month == 0):
+            if(prev_month == 0): # this is because the data for december uses index 12
                 prev_month = 12
-            V_Team_Prob = poisson_prob_away(month_team_data[prev_month], game, len(game_data))
-            H_Team_Prob = poisson_prob_home(month_team_data[prev_month], game, len(game_data))
+            V_Team_Prob = poisson_prob_away(month_team_data[prev_month], game, len(game_data)) # poisson probabilty of visiting team winning 
+            H_Team_Prob = poisson_prob_home(month_team_data[prev_month], game, len(game_data)) # poisson probabilty of home team winning 
+            # the bet_team is the one most probable of winning
             if(V_Team_Prob > H_Team_Prob):
                 bet_team = game[0]
                 bet_ML = game[1]
-                bet_size = 5 + 10 * float(V_Team_Prob)
+                bet_size = 5 + 10 * float(V_Team_Prob) # bet size is constant 5 + the confidence in prediction
             else:
                 bet_team = game[2]
                 bet_ML = game[3]
-                bet_size = 5 + 10 * float(H_Team_Prob)
+                bet_size = 5 + 10 * float(H_Team_Prob)  # bet size is constant 5 + the confidence in prediction
             curr_profit = -1 * bet_size
             if(game[4] == bet_team) : # you won!
                 curr_profit += payout(bet_ML, bet_size)
             profit += curr_profit
+        # data point added to result array
         if(index == cutoff and count < segments) :
             result.append([cutoff, profit])
             count += 1
@@ -372,12 +420,17 @@ def poisson_model(file_name, favorites, segments):
     result.append([len(game_data) - 1, profit])
     return result
 
+###############################################################
+# Helper Func Poisson:
+#   poisson pdf 
+
 def poisson(lambdaa, k):
     pmf = 0
     factorial = math.factorial(k)
     pmf = ((lambdaa**k) * math.exp( (-1 *lambdaa) )) / factorial
     return pmf
 
+# same as poisson but uses stirling approximation since k goes up to 140
 def poissonNBA(lambdaa, k):
     pmf = Decimal(0)
     lambdaa = Decimal(lambdaa)
@@ -545,7 +598,7 @@ def poisson_prob_home(team_data, game, number_of_games):
 
 def poisson_model_martingale(file_name, favorites, segments):
     game_data = create_struct(file_name)
-    # team_data = team_stats(game_data)
+    # this part of the function gets the file_name for the previous year of play
     prev_year = "no prev"
     if(file_name[23] != '7'):
         prev_year = file_name[0:23] + str(int(file_name[23]) - 1) + file_name[24:]
@@ -557,40 +610,43 @@ def poisson_model_martingale(file_name, favorites, segments):
                 new_year = str(int(file_name[26]) - 1)
                 prev_year = prev_year[0:26] + new_year + prev_year[27:]
         prev_year = team_stats(create_struct(prev_year))
-    month_team_data = team_stats_per_month(prev_year, game_data)
+    month_team_data = team_stats_per_month(prev_year, game_data) # obtains data for the previous year of play
     profit = 0
     profit_round = 0
     initial_bet_size = 3
     result = [] # filled with tuples for every 10% of games
     percent = len(game_data) // segments
     count = 1
-    cutoff = (count * percent) - 1
+    cutoff = (count * percent) - 1 # used to add data points for the final graph
     result.append([0, profit])
     index = 0
     start_month = game_data[0][7]
     for game in game_data :
-        if(game[7] != start_month):
+        if(game[7] != start_month):  # do not bet on start month to gather data for better prediction
+            # initialized values
             bet_team = ''
-            bet_ML = 100
+            bet_ML = 100 
             bet_size = 5
             prev_month = game[7] - 1
-            if(prev_month == 0):
+            if(prev_month == 0): # this is because the data for december uses index 12
                 prev_month = 12
-            V_Team_Prob = poisson_prob_away(month_team_data[prev_month], game, len(game_data))
-            H_Team_Prob = poisson_prob_home(month_team_data[prev_month], game, len(game_data))
+            V_Team_Prob = poisson_prob_away(month_team_data[prev_month], game, len(game_data)) # poisson probabilty of visiting team winning 
+            H_Team_Prob = poisson_prob_home(month_team_data[prev_month], game, len(game_data)) # poisson probabilty of home team winning 
+            # the bet_team is the one most probable of winning
             if(V_Team_Prob > H_Team_Prob):
                 bet_team = game[0]
                 bet_ML = game[1]
             else:
                 bet_team = game[2]
                 bet_ML = game[3]
-            bet_size = martingale(bet_ML, profit_round, initial_bet_size)
+            bet_size = martingale(bet_ML, profit_round, initial_bet_size) # bet size determined in martingale fashion rather than a constant amount
             curr_profit = -1 * bet_size
             profit_round += curr_profit
             if(game[4] == bet_team) : # you won!
                 curr_profit += payout(bet_ML, bet_size)
                 profit_round = 0
             profit += curr_profit
+        # data point added to result array
         if(index == cutoff and count < segments) :
             result.append([cutoff, profit])
             count += 1

@@ -38,18 +38,7 @@ def main():
     run_martingale()
     # run_oscar_grind()
     # run_kelly_criterion()
-    # run_poisson()
+    run_poisson()
     # run_poisson_martingale()
 
-# NEED TO RUN TWICE TO LOAD MATLIBPLOT
-count = 0
-if(count > 0):
-    if __name__ == "__main__":
-        main()
-if(count == 0):
-    count += 1
-
-    
-    
-
-# <Figure size 640x480 with 1 Axes>
+main()
