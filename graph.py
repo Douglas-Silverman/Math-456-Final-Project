@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plt
-from run_model import * 
+from model import * 
 from game_reader import *
 
 

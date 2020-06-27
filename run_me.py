@@ -1,5 +1,5 @@
 from game_reader import *
-from run_model import *
+from model import *
 from graph import *
 from decimal import Decimal
 
