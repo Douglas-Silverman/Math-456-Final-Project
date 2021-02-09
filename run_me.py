@@ -36,9 +36,9 @@ def run_poisson_martingale():
 def main():
     run_favorites()
     run_martingale()
-    # run_oscar_grind()
-    # run_kelly_criterion()
-    run_poisson()
-    # run_poisson_martingale()
+    run_oscar_grind()
+    run_kelly_criterion()
+    run_poisson()            # note this one requires lots of RAM, comment out if unable to run
+    run_poisson_martingale() # note this one requires lots of RAM, comment out if unable to run
 
 main()
